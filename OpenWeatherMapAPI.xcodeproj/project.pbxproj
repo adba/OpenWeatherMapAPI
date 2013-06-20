@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		37C869C03E56416399BD0066 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E0CED207DE554E61828EEA87 /* libPods.a */; };
 		64DC45D1177380AC0039B58D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64DC45D0177380AC0039B58D /* UIKit.framework */; };
 		64DC45D3177380AC0039B58D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64DC45D2177380AC0039B58D /* Foundation.framework */; };
 		64DC45D5177380AC0039B58D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64DC45D4177380AC0039B58D /* CoreGraphics.framework */; };
@@ -18,9 +19,11 @@
 		64DC45E7177380AC0039B58D /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 64DC45E6177380AC0039B58D /* Default-568h@2x.png */; };
 		64DC45EA177380AC0039B58D /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64DC45E8177380AC0039B58D /* MainStoryboard.storyboard */; };
 		64DC45ED177380AC0039B58D /* OWMViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64DC45EC177380AC0039B58D /* OWMViewController.m */; };
+		64DC45F6177380FD0039B58D /* OWMWeatherAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 64DC45F5177380FD0039B58D /* OWMWeatherAPI.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1589889C6C524CD1909E4D3F /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		64DC45CD177380AC0039B58D /* OpenWeatherMapAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenWeatherMapAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64DC45D0177380AC0039B58D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		64DC45D2177380AC0039B58D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -37,6 +40,9 @@
 		64DC45E9177380AC0039B58D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		64DC45EB177380AC0039B58D /* OWMViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWMViewController.h; sourceTree = "<group>"; };
 		64DC45EC177380AC0039B58D /* OWMViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWMViewController.m; sourceTree = "<group>"; };
+		64DC45F4177380FD0039B58D /* OWMWeatherAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWMWeatherAPI.h; sourceTree = "<group>"; };
+		64DC45F5177380FD0039B58D /* OWMWeatherAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWMWeatherAPI.m; sourceTree = "<group>"; };
+		E0CED207DE554E61828EEA87 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +53,7 @@
 				64DC45D1177380AC0039B58D /* UIKit.framework in Frameworks */,
 				64DC45D3177380AC0039B58D /* Foundation.framework in Frameworks */,
 				64DC45D5177380AC0039B58D /* CoreGraphics.framework in Frameworks */,
+				37C869C03E56416399BD0066 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +66,7 @@
 				64DC45D6177380AC0039B58D /* OpenWeatherMapAPI */,
 				64DC45CF177380AC0039B58D /* Frameworks */,
 				64DC45CE177380AC0039B58D /* Products */,
+				1589889C6C524CD1909E4D3F /* Pods.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,6 +84,7 @@
 				64DC45D0177380AC0039B58D /* UIKit.framework */,
 				64DC45D2177380AC0039B58D /* Foundation.framework */,
 				64DC45D4177380AC0039B58D /* CoreGraphics.framework */,
+				E0CED207DE554E61828EEA87 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -83,6 +92,7 @@
 		64DC45D6177380AC0039B58D /* OpenWeatherMapAPI */ = {
 			isa = PBXGroup;
 			children = (
+				64DC45F3177380B50039B58D /* OpenWeatherMapAPI */,
 				64DC45DF177380AC0039B58D /* OWMAppDelegate.h */,
 				64DC45E0177380AC0039B58D /* OWMAppDelegate.m */,
 				64DC45E8177380AC0039B58D /* MainStoryboard.storyboard */,
@@ -107,6 +117,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		64DC45F3177380B50039B58D /* OpenWeatherMapAPI */ = {
+			isa = PBXGroup;
+			children = (
+				64DC45F4177380FD0039B58D /* OWMWeatherAPI.h */,
+				64DC45F5177380FD0039B58D /* OWMWeatherAPI.m */,
+			);
+			path = OpenWeatherMapAPI;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -114,9 +133,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 64DC45F0177380AC0039B58D /* Build configuration list for PBXNativeTarget "OpenWeatherMapAPI" */;
 			buildPhases = (
+				4E07F1438A1E4642AEEA0EC0 /* Check Pods Manifest.lock */,
 				64DC45C9177380AC0039B58D /* Sources */,
 				64DC45CA177380AC0039B58D /* Frameworks */,
 				64DC45CB177380AC0039B58D /* Resources */,
+				70286622BA7D4CF29C90C37F /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -169,6 +190,37 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		4E07F1438A1E4642AEEA0EC0 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+		};
+		70286622BA7D4CF29C90C37F /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		64DC45C9177380AC0039B58D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -177,6 +229,7 @@
 				64DC45DD177380AC0039B58D /* main.m in Sources */,
 				64DC45E1177380AC0039B58D /* OWMAppDelegate.m in Sources */,
 				64DC45ED177380AC0039B58D /* OWMViewController.m in Sources */,
+				64DC45F6177380FD0039B58D /* OWMWeatherAPI.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +313,7 @@
 		};
 		64DC45F1177380AC0039B58D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1589889C6C524CD1909E4D3F /* Pods.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OpenWeatherMapAPI/OpenWeatherMapAPI-Prefix.pch";
@@ -271,6 +325,7 @@
 		};
 		64DC45F2177380AC0039B58D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1589889C6C524CD1909E4D3F /* Pods.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OpenWeatherMapAPI/OpenWeatherMapAPI-Prefix.pch";
@@ -299,6 +354,7 @@
 				64DC45F2177380AC0039B58D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
