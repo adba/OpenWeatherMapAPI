@@ -7,38 +7,50 @@ from [openweathermap.org](http://openweathermap.org/ "OpenWeatherMap.org").
 
 ### Installation ###
 
-1. Include the header `#import "OWMWeatherAPI.h"`.
-2. Setup the api:
+Using the API is really simple if you have [CocoaPods](http://cocoapods.org/ "CocoaPods.org") installed.
+
+1. Add the dependency to your `Podfile`
     
-        // Setup weather api
-        OWMWeatherAPI *weatherAPI = [[OWMWeatherAPI alloc] initWithAPIKey:@"YOUR-API-KEY"];
+        pod 'OpenWeatherMapAPI', '~> 0.0.2'
 
+2. Include the header `#import "OWMWeatherAPI.h"`.
+3. Setup the api:
+    
+    ```Objective-c
+    // Setup weather api
+    OWMWeatherAPI *weatherAPI = [[OWMWeatherAPI alloc] initWithAPIKey:@"YOUR-API-KEY"];
+    ```
 
-3. Select the default temperature format (defaults to Celcius)
+4. Select the default temperature format (defaults to Celcius)
+
+    ```Objective-c
     [weatherAPI setTemperatureFormat:kOWMTempCelcius];
-
+    ```
 
 ### Getting data ###
 
 The api is at this time just simple wrapper for the http-api. So to get the current weather for
 the city [`Odense`](http://en.wikipedia.org/wiki/Odense "Odense") you can call it like this:
 
-    [weatherAPI currentWeatherByCityName:@"Odense" withCallback:^(NSError *error, NSDictionary *result) {
-        if (error) {
-            // handle the error
-            return;
-        }
+```Objective-c
+[weatherAPI currentWeatherByCityName:@"Odense" withCallback:^(NSError *error, NSDictionary *result) {
+    if (error) {
+        // handle the error
+        return;
+    }
 
-        // The data is ready
+    // The data is ready
 
-        NSString *cityName = result[@"name"];
-        NSNumber *currentTemp = result[@"main"][@"temp"];
+    NSString *cityName = result[@"name"];
+    NSNumber *currentTemp = result[@"main"][@"temp"];
 
-    }]
+}]
+```
 
 The result data is a `NSDictionary` that looks like 
 this ([json](http://api.openweathermap.org/data/2.5/weather?q=Odense "JSON data")):
-    
+
+```JavaScript
     {
         coord: {
             lon: 10.38831,
@@ -79,6 +91,7 @@ this ([json](http://api.openweathermap.org/data/2.5/weather?q=Odense "JSON data"
         name: "Odense",
         cod: 200
     }
+```
 
 See an example in the `OWMViewController.m` file.
 
@@ -86,34 +99,37 @@ See an example in the `OWMViewController.m` file.
 The following methods are availabe at this time:
 
 current weather by city name:
-
+```Objective-c
     -(void) currentWeatherByCityName:(NSString *) name
                         withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
-
+```
 
 current weather by coordinate:
-
+```Objective-c
     -(void) currentWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
                           withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+```
 
 current weather by city id:
-
+```Objective-c
     -(void) currentWeatherByCityId:(NSString *) cityId
                       withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
-
+```
 
 forcast by city name:
-
+```Objective-c
     -(void) forecastWeatherByCityName:(NSString *) name
                          withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+```
 
 forcast by coordinate:
-
+```Objective-c
     -(void) forecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
                            withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+```
 
 forcast by city id:
-
+```Objective-c
     -(void) forecastWeatherByCityId:(NSString *) cityId
                        withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
-
+```
