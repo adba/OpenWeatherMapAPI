@@ -100,6 +100,8 @@ See an example in the `OWMViewController.m` file.
 ## Methods ##
 The following methods are availabe at this time:
 
+### current weather ###
+
 current weather by city name:
 ```Objective-c
     -(void) currentWeatherByCityName:(NSString *) name
@@ -118,6 +120,8 @@ current weather by city id:
                       withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
 
+### forcasts (3 hour intervals) ###
+
 forcast by city name:
 ```Objective-c
     -(void) forecastWeatherByCityName:(NSString *) name
@@ -134,4 +138,28 @@ forcast by city id:
 ```Objective-c
     -(void) forecastWeatherByCityId:(NSString *) cityId
                        withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+```
+
+### daily forcasts ###
+
+daily forcast by city name:
+```Objective-c
+    -(void) dailyForecastWeatherByCityName:(NSString *) name
+                                 withCount:(int) count
+                              withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+```
+
+daily forcast by coordinates:
+```Objective-c
+    -(void) dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
+                                   withCount:(int) count
+                                withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+
+```
+
+daily forcast by city id:
+```Objective-c
+   -(void) dailyForecastWeatherByCityId:(NSString *) cityId
+                              withCount:(int) count
+                           withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
