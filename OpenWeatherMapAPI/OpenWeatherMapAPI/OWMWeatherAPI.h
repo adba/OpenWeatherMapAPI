@@ -50,4 +50,18 @@ typedef enum {
 -(void) forecastWeatherByCityId:(NSString *) cityId
                    withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 
+#pragma mark forcast - n days
+
+-(void) dailyForecastWeatherByCityName:(NSString *) name
+                             withCount:(int) count
+                          withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+
+-(void) dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
+                               withCount:(int) count
+                            withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+
+-(void) dailyForecastWeatherByCityId:(NSString *) cityId
+                           withCount:(int) count
+                        withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+
 @end

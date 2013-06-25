@@ -90,6 +90,19 @@
         
     }
     
+    NSMutableDictionary *temp = [[dic objectForKey:@"temp"] mutableCopy];
+    if (temp) {
+        temp[@"day"] = [self convertTemp:temp[@"day"]];
+        temp[@"eve"] = [self convertTemp:temp[@"eve"]];
+        temp[@"max"] = [self convertTemp:temp[@"max"]];
+        temp[@"min"] = [self convertTemp:temp[@"min"]];
+        temp[@"morn"] = [self convertTemp:temp[@"morn"]];
+        temp[@"night"] = [self convertTemp:temp[@"night"]];        
+        
+        dic[@"temp"] = [temp copy];
+    }
+    
+    
     NSMutableDictionary *sys = [[dic objectForKey:@"sys"] mutableCopy];
     if (sys) {
         
@@ -213,6 +226,37 @@
                   withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
 {
     NSString *method = [NSString stringWithFormat:@"/forecast?id=%@", cityId];
+    [self callMethod:method withCallback:callback];
+}
+
+#pragma mark forcast - n days
+
+-(void) dailyForecastWeatherByCityName:(NSString *) name
+                             withCount:(int) count
+                          withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+{
+    
+    NSString *method = [NSString stringWithFormat:@"/forecast/daily?q=%@&cnt=%d", name, count];
+    [self callMethod:method withCallback:callback];
+    
+}
+
+-(void) dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
+                               withCount:(int) count
+                            withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+{
+    
+    NSString *method = [NSString stringWithFormat:@"/forecast/daily?lat=%f,lon=%f&cnt=%d",
+                        coordinate.latitude, coordinate.longitude, count ];
+    [self callMethod:method withCallback:callback];
+    
+}
+
+-(void) dailyForecastWeatherByCityId:(NSString *) cityId
+                           withCount:(int) count
+                   withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+{
+    NSString *method = [NSString stringWithFormat:@"/forecast?id=%@&cnt=%d", cityId, count];
     [self callMethod:method withCallback:callback];
 }
 
