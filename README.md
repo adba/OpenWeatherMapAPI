@@ -1,3 +1,5 @@
+<center>![OpenWeatherMapAPI](https://raw.github.com/adba/OpenWeatherMapAPI/master/hero.png)</center>
+
 # Open Weather Map iOS Api #
 
 This projects allows you to quickly and easily fetch data
