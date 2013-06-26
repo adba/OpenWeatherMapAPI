@@ -12,7 +12,7 @@ Using the API is really simple if you have [CocoaPods](http://cocoapods.org/ "Co
 1. Add the dependency to your `Podfile`
     
     ```Ruby
-    pod 'OpenWeatherMapAPI', '~> 0.0.3'
+    pod 'OpenWeatherMapAPI', '~> 0.0.4'
     ```
 
 2. Include the header `#import "OWMWeatherAPI.h"`.
