@@ -187,7 +187,7 @@
                       withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
 {
     
-    NSString *method = [NSString stringWithFormat:@"/weather?lat=%f,lon=%f",
+    NSString *method = [NSString stringWithFormat:@"/weather?lat=%f&lon=%f",
                         coordinate.latitude, coordinate.longitude ];
     [self callMethod:method withCallback:callback];    
     
@@ -216,7 +216,7 @@
                       withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
 {
     
-    NSString *method = [NSString stringWithFormat:@"/forecast?lat=%f,lon=%f",
+    NSString *method = [NSString stringWithFormat:@"/forecast?lat=%f&lon=%f",
                         coordinate.latitude, coordinate.longitude ];
     [self callMethod:method withCallback:callback];
     
@@ -246,7 +246,7 @@
                             withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
 {
     
-    NSString *method = [NSString stringWithFormat:@"/forecast/daily?lat=%f,lon=%f&cnt=%d",
+    NSString *method = [NSString stringWithFormat:@"/forecast/daily?lat=%f&lon=%f&cnt=%d",
                         coordinate.latitude, coordinate.longitude, count ];
     [self callMethod:method withCallback:callback];
     
