@@ -233,7 +233,7 @@
 
 -(void) dailyForecastWeatherByCityName:(NSString *) name
                              withCount:(int) count
-                          withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+                          andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
 {
     
     NSString *method = [NSString stringWithFormat:@"/forecast/daily?q=%@&cnt=%d", name, count];
@@ -243,7 +243,7 @@
 
 -(void) dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
                                withCount:(int) count
-                            withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+                            andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
 {
     
     NSString *method = [NSString stringWithFormat:@"/forecast/daily?lat=%f&lon=%f&cnt=%d",
@@ -254,7 +254,7 @@
 
 -(void) dailyForecastWeatherByCityId:(NSString *) cityId
                            withCount:(int) count
-                   withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+                   andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
 {
     NSString *method = [NSString stringWithFormat:@"/forecast?id=%@&cnt=%d", cityId, count];
     [self callMethod:method withCallback:callback];
