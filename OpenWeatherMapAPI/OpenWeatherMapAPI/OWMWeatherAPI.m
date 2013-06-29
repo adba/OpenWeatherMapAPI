@@ -15,6 +15,8 @@
     NSString *_apiVersion;
     NSOperationQueue *_weatherQueue;
     
+    NSString *_lang;
+    
     OWMTemperature _currentTemperatureFormat;
 }
 
@@ -46,7 +48,6 @@
 - (OWMTemperature) temperatureFormat {
     return _currentTemperatureFormat;
 }
-
 
 + (NSNumber *) tempToCelcius:(NSNumber *) tempKelvin
 {
@@ -136,7 +137,15 @@
     
     NSOperationQueue *callerQueue = [NSOperationQueue currentQueue];
     
-    NSString *urlString = [NSString stringWithFormat:@"%@%@%@&APPID=%@", _baseURL, _apiVersion, method, _apiKey];
+    // build the lang paramter
+    NSString *langString;
+    if (_lang && _lang.length > 0) {
+        langString = [NSString stringWithFormat:@"&lang=%@", _lang];
+    } else {
+        langString = @"";
+    }
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@%@%@&APPID=%@%@", _baseURL, _apiVersion, method, _apiKey, langString];
     
     NSURL *url = [NSURL URLWithString:urlString];
     
@@ -170,6 +179,37 @@
 
 - (NSString *) apiVersion {
     return _apiVersion;
+}
+
+- (void) setLangWithPreferedLanguage {
+    NSString *lang = [[NSLocale preferredLanguages] objectAtIndex:0];
+    
+    // look up, lang and convert it to the format that openweathermap.org accepts.
+    NSDictionary *langCodes = @{
+                                @"sv" : @"se",
+                                @"es" : @"sp",
+                                @"en-GB": @"en",
+                                @"uk" : @"ua",
+                                @"pt-PT" : @"pt",
+                                @"zh-Hans" : @"zh_cn",
+                                @"zh-Hant" : @"zh_tw",                                
+                                };
+    
+    NSString *l = [langCodes objectForKey:lang];
+    if (l) {
+        lang = l;
+    }
+    
+    
+    [self setLang:lang];
+}
+
+- (void) setLang:(NSString *) lang {
+    _lang = lang;
+}
+
+- (NSString *) lang {
+    return _lang;
 }
 
 #pragma mark current weather

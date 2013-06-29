@@ -36,6 +36,10 @@
     
     _weatherAPI = [[OWMWeatherAPI alloc] initWithAPIKey:@"1111111111"]; // Replace the key with your own
     
+    // We want localized strings according to the prefered system language
+    [_weatherAPI setLangWithPreferedLanguage];
+    
+    // We want the temperatures in celcius, you can also get them in farenheit.
     [_weatherAPI setTemperatureFormat:kOWMTempCelcius];
 
     [self.activityIndicator startAnimating];

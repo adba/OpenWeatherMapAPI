@@ -26,6 +26,9 @@ typedef enum {
 - (void) setTemperatureFormat:(OWMTemperature) tempFormat;
 - (OWMTemperature) temperatureFormat;
 
+- (void) setLangWithPreferedLanguage;
+- (void) setLang:(NSString *) lang;
+-(NSString *) lang;
 
 #pragma mark - current weather
 
