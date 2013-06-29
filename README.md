@@ -1,9 +1,24 @@
 <center>![OpenWeatherMapAPI](https://raw.github.com/adba/OpenWeatherMapAPI/master/hero.png)</center>
 
-# Open Weather Map iOS Api #
+# Open Weather Map iOS API #
 
 This projects allows you to quickly and easily fetch data
 from [openweathermap.org](http://openweathermap.org/ "OpenWeatherMap.org").
+
+## API Changes ##
+
+### Version 0.0.5 ###
+
+The methods for getting the daily forecast have changed names. So instead of: `dailyForecastWeatherByCityName:withCount:withCallback:`
+they are now called: `dailyForecastWeatherByCityName:withCount:andCallback:`
+
+Added new methods for setting the `lang` parameter to the api:
+    
+     - (void) setLangWithPreferedLanguage;
+     - (void) setLang:(NSString *) lang;
+     - (NSString *) lang;
+
+The method `setLangWithPreferedLanguage` sets the lang parameter according to the prefered language on the phone.
 
 ## Usage ##
 
@@ -25,7 +40,7 @@ Using the API is really simple if you have [CocoaPods](http://cocoapods.org/ "Co
     OWMWeatherAPI *weatherAPI = [[OWMWeatherAPI alloc] initWithAPIKey:@"YOUR-API-KEY"];
     ```
 
-4. Select the default temperature format (defaults to Celcius)
+4. Select the default temperature format (defaults to Celsius)
 
     ```Objective-c
     [weatherAPI setTemperatureFormat:kOWMTempCelcius];
@@ -122,36 +137,36 @@ current weather by city id:
                       withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
 
-### forcasts (3 hour intervals) ###
+### forecasts (3 hour intervals) ###
 
-forcast by city name:
+forecast by city name:
 ```Objective-c
     -(void) forecastWeatherByCityName:(NSString *) name
                          withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
 
-forcast by coordinate:
+forecast by coordinate:
 ```Objective-c
     -(void) forecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
                            withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
 
-forcast by city id:
+forecast by city id:
 ```Objective-c
     -(void) forecastWeatherByCityId:(NSString *) cityId
                        withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
 
-### daily forcasts ###
+### daily forecasts ###
 
-daily forcast by city name:
+daily forecast by city name:
 ```Objective-c
     -(void) dailyForecastWeatherByCityName:(NSString *) name
                                  withCount:(int) count
                               withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
 
-daily forcast by coordinates:
+daily forecast by coordinates:
 ```Objective-c
     -(void) dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
                                    withCount:(int) count
@@ -159,7 +174,7 @@ daily forcast by coordinates:
 
 ```
 
-daily forcast by city id:
+daily forecast by city id:
 ```Objective-c
    -(void) dailyForecastWeatherByCityId:(NSString *) cityId
                               withCount:(int) count

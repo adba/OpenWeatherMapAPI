@@ -28,7 +28,7 @@ typedef enum {
 
 - (void) setLangWithPreferedLanguage;
 - (void) setLang:(NSString *) lang;
--(NSString *) lang;
+- (NSString *) lang;
 
 #pragma mark - current weather
 
