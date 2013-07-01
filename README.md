@@ -163,14 +163,14 @@ daily forecast by city name:
 ```Objective-c
     -(void) dailyForecastWeatherByCityName:(NSString *) name
                                  withCount:(int) count
-                              withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+                              andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
 
 daily forecast by coordinates:
 ```Objective-c
     -(void) dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
                                    withCount:(int) count
-                                withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+                                andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 
 ```
 
@@ -178,5 +178,5 @@ daily forecast by city id:
 ```Objective-c
    -(void) dailyForecastWeatherByCityId:(NSString *) cityId
                               withCount:(int) count
-                           withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+                           andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
