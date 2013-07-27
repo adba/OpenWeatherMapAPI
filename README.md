@@ -180,3 +180,13 @@ daily forecast by city id:
                               withCount:(int) count
                            andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 ```
+
+### searching ###
+
+search for a city by name:
+```
+   -(void) searchForCityName:(NSString *) name
+                   withCount:(int) count
+                andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+```
+

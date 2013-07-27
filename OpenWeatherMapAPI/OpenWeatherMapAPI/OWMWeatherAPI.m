@@ -301,5 +301,23 @@
 }
 
 
+#pragma mark searching
+
+-(void) searchForCityName:(NSString *)name
+         withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+{
+    NSString *method = [NSString stringWithFormat:@"/find?q=%@&units=metric", name];
+    [self callMethod:method withCallback:callback];
+}
+
+-(void) searchForCityName:(NSString *)name
+                withCount:(int) count
+             andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+{
+    NSString *method = [NSString stringWithFormat:@"/find?q=%@&units=metric&cnt=%d", name, count];
+    [self callMethod:method withCallback:callback];
+}
+
+
 
 @end
