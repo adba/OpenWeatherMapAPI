@@ -80,6 +80,10 @@
         
     }];
     
+    [_weatherAPI searchForCityName:@"Odense" withCallback:^(NSError *error, NSDictionary *result) {
+        NSLog(@"found: %@", result);
+    }];
+    
 }
 
 - (void)didReceiveMemoryWarning
