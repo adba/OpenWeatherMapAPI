@@ -80,7 +80,7 @@
         
     }];
     
-    [_weatherAPI searchForCityName:@"Odense" withCallback:^(NSError *error, NSDictionary *result) {
+    [_weatherAPI searchForCityName:@"Buenos Aires" withCallback:^(NSError *error, NSDictionary *result) {
         NSLog(@"found: %@", result);
     }];
     
