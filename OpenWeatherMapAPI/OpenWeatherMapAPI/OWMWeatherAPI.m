@@ -296,7 +296,7 @@
                            withCount:(int) count
                    andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
 {
-    NSString *method = [NSString stringWithFormat:@"/forecast?id=%@&cnt=%d", cityId, count];
+    NSString *method = [NSString stringWithFormat:@"/forecast/daily?id=%@&cnt=%d", cityId, count];
     [self callMethod:method withCallback:callback];
 }
 
