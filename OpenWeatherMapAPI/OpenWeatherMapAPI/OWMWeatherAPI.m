@@ -9,315 +9,260 @@
 #import "OWMWeatherAPI.h"
 #import "AFJSONRequestOperation.h"
 
-@interface OWMWeatherAPI () {
-    NSString *_baseURL;
-    NSString *_apiKey;
-    NSString *_apiVersion;
-    NSOperationQueue *_weatherQueue;
-    
-    NSString *_lang;
-    
-    OWMTemperature _currentTemperatureFormat;
-}
+NSString *const OWMWeatherAPIBaseURL = @"http://api.openweathermap.org/data";
+NSString *const OWMWeatherAPIDefaultVersion = @"2.5";
+NSString *const OWMWeatherAPIQueueName = @"OMWWeatherQueue";
+
+@interface OWMWeatherAPI ()
+
+@property (nonatomic) NSString *baseURL;
+@property (nonatomic) NSString *APIKey;
+@property (nonatomic) NSString *APIVersion;
+
+@property (nonatomic) NSOperationQueue *weatherQueue;
 
 @end
 
 @implementation OWMWeatherAPI
 
-- (instancetype) initWithAPIKey:(NSString *) apiKey {
+- (instancetype)initWithAPIKey:(NSString *)APIKey
+{
     self = [super init];
     if (self) {
-        _baseURL = @"http://api.openweathermap.org/data/";
-        _apiKey  = apiKey;
-        _apiVersion = @"2.5";
+        _baseURL = OWMWeatherAPIBaseURL;
+        _APIKey = APIKey;
+        _APIVersion = OWMWeatherAPIDefaultVersion;
+    
+        _weatherQueue = [NSOperationQueue new];
+        _weatherQueue.name = OWMWeatherAPIQueueName;
         
-        _weatherQueue = [[NSOperationQueue alloc] init];
-        _weatherQueue.name = @"OMWWeatherQueue";
-        
-        _currentTemperatureFormat = kOWMTempCelcius;
-        
+        _measurementSystem = OWMWeatherMeasurementSystemMetrics;
     }
     return self;
 }
 
-#pragma mark - private parts
+#pragma mark - Helpers
 
-- (void) setTemperatureFormat:(OWMTemperature) tempFormat {
-    _currentTemperatureFormat = tempFormat;
-}
-- (OWMTemperature) temperatureFormat {
-    return _currentTemperatureFormat;
-}
-
-+ (NSNumber *) tempToCelcius:(NSNumber *) tempKelvin
+- (NSDate *)convertToDate:(NSNumber *)timestamp
 {
-    return @(tempKelvin.floatValue - 273.15);
+    return [NSDate dateWithTimeIntervalSince1970:timestamp.integerValue];
 }
 
-+ (NSNumber *) tempToFahrenheit:(NSNumber *) tempKelvin
-{
-    return @((tempKelvin.floatValue * 9/5) - 459.67);
-}
-
-
-- (NSNumber *) convertTemp:(NSNumber *) temp {
-    if (_currentTemperatureFormat == kOWMTempCelcius) {
-        return [OWMWeatherAPI tempToCelcius:temp];
-    } else if (_currentTemperatureFormat == kOWMTempFahrenheit) {
-        return [OWMWeatherAPI tempToFahrenheit:temp];
-    } else {
-        return temp;
-    }
-}
-
-- (NSDate *) convertToDate:(NSNumber *) num {
-    return [NSDate dateWithTimeIntervalSince1970:num.intValue];
-}
+#pragma mark - Private Parts
 
 /**
- * Recursivly change temperatures in result data
+ * Recursivly change timestamps to dates in response data.
  **/
-- (NSDictionary *) convertResult:(NSDictionary *) res {
-    
-    NSMutableDictionary *dic = [res mutableCopy];
-    
-    NSMutableDictionary *main = [[dic objectForKey:@"main"] mutableCopy];
-    if (main) {
-        main[@"temp"] = [self convertTemp:main[@"temp"]];
-        main[@"temp_min"] = [self convertTemp:main[@"temp_min"]];
-        main[@"temp_max"] = [self convertTemp:main[@"temp_max"]];
-        
-        dic[@"main"] = [main copy];
-        
-    }
-    
-    NSMutableDictionary *temp = [[dic objectForKey:@"temp"] mutableCopy];
-    if (temp) {
-        temp[@"day"] = [self convertTemp:temp[@"day"]];
-        temp[@"eve"] = [self convertTemp:temp[@"eve"]];
-        temp[@"max"] = [self convertTemp:temp[@"max"]];
-        temp[@"min"] = [self convertTemp:temp[@"min"]];
-        temp[@"morn"] = [self convertTemp:temp[@"morn"]];
-        temp[@"night"] = [self convertTemp:temp[@"night"]];        
-        
-        dic[@"temp"] = [temp copy];
-    }
-    
-    
-    NSMutableDictionary *sys = [[dic objectForKey:@"sys"] mutableCopy];
+- (NSDictionary *)convertDates:(NSDictionary *)data
+{
+    NSMutableDictionary *dictionary = [data mutableCopy];
+    NSMutableDictionary *sys = [dictionary[@"sys"] mutableCopy];
     if (sys) {
-        
-        sys[@"sunrise"] = [self convertToDate: sys[@"sunrise"]];
-        sys[@"sunset"] = [self convertToDate: sys[@"sunset"]];
-        
-        dic[@"sys"] = [sys copy];
+        sys[@"sunrise"] = [self convertToDate:sys[@"sunrise"]];
+        sys[@"sunset"] = [self convertToDate:sys[@"sunset"]];
+        dictionary[@"sys"] = [sys copy];
     }
     
-    
-    NSMutableArray *list = [[dic objectForKey:@"list"] mutableCopy];
+    NSMutableArray *list = [dictionary[@"list"] mutableCopy];
     if (list) {
-        
-        for (int i = 0; i < list.count; i++) {
-            [list replaceObjectAtIndex:i withObject:[self convertResult: list[i]]];
+        for (NSInteger index = 0; index < list.count; index++) {
+            NSDictionary *dictionary = list[index];
+            NSDictionary *convertedDictionary = [self convertDates:dictionary];
+            [list replaceObjectAtIndex:index withObject:convertedDictionary];
         }
-        
-        dic[@"list"] = [list copy];
+        dictionary[@"list"] = [list copy];
     }
-    
-    dic[@"dt"] = [self convertToDate:dic[@"dt"]];
+    dictionary[@"dt"] = [self convertToDate:dictionary[@"dt"]];
 
-    return [dic copy];
+    return [dictionary copy];
 }
 
-/**
- * Calls the web api, and converts the result. Then it calls the callback on the caller-queue
- **/
-- (void) callMethod:(NSString *) method withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)callMethod:(NSString *)method
+        withParams:(NSDictionary *)params
+          callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    
     NSOperationQueue *callerQueue = [NSOperationQueue currentQueue];
+    NSMutableDictionary *requestParams = [[NSMutableDictionary alloc] initWithDictionary:params];
     
-    // build the lang paramter
-    NSString *langString;
-    if (_lang && _lang.length > 0) {
-        langString = [NSString stringWithFormat:@"&lang=%@", _lang];
-    } else {
-        langString = @"";
+    // Add metics parameter.
+    NSString *units = (self.measurementSystem == OWMWeatherMeasurementSystemMetrics) ? @"metric" : @"imperial";
+    requestParams[@"units"] = units;
+    
+    // Add language parameter.
+    if (self.lang.length) {
+        requestParams[@"lang"] = self.lang;
     }
     
-    NSString *urlString = [NSString stringWithFormat:@"%@%@%@&APPID=%@%@", _baseURL, _apiVersion, method, _apiKey, langString];
+    // Add API key parameter.
+    if (self.APIKey.length) {
+        requestParams[@"APIID"] = self.APIKey;
+    }
     
+    // Combine parameters to string.
+    NSMutableArray *keyValuePairs = [NSMutableArray new];
+    for (NSString *key in requestParams) {
+        id value = requestParams[key];
+        if ([value isKindOfClass:[NSString class]]) {
+            value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        }
+        NSString *keyValue = [NSString stringWithFormat:@"%@=%@", key, value];
+        [keyValuePairs addObject:keyValue];
+    }
+    NSString *parametersString = [keyValuePairs componentsJoinedByString:@"&"];
+    
+    // Generate URL.
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@/%@", self.baseURL, self.APIVersion, method];
+    if (parametersString.length) {
+        urlString = [urlString stringByAppendingFormat:@"?%@", parametersString];
+    }
     NSURL *url = [NSURL URLWithString:urlString];
-    
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
+    // Send request and handle response.
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-
-        // callback on the caller queue
-        NSDictionary *res = [self convertResult:JSON];
+        if (self.shouldConvertDates) {
+            JSON = [self convertDates:JSON];
+        }
         [callerQueue addOperationWithBlock:^{
-            callback(nil, res);
+            callback(nil, JSON);
         }];
-
-        
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-
-        // callback on the caller queue
         [callerQueue addOperationWithBlock:^{
             callback(error, nil);
         }];
-        
     }];
-    [_weatherQueue addOperation:operation];
+    [self.weatherQueue addOperation:operation];
 }
 
-#pragma mark - public api
+#pragma mark - Public API
 
-- (void) setApiVersion:(NSString *) version {
-    _apiVersion = version;
-}
-
-- (NSString *) apiVersion {
-    return _apiVersion;
-}
-
-- (void) setLangWithPreferedLanguage {
-    NSString *lang = [[NSLocale preferredLanguages] objectAtIndex:0];
+- (void)setLangWithPreferredLanguage
+{
+    NSString *preferedLanguage = [[NSLocale preferredLanguages] objectAtIndex:0];
     
-    // look up, lang and convert it to the format that openweathermap.org accepts.
-    NSDictionary *langCodes = @{
-                                @"sv" : @"se",
+    // Convert lang to the format that openweathermap.org accepts.
+    NSDictionary *langCodes = @{@"sv" : @"se",
                                 @"es" : @"sp",
                                 @"en-GB": @"en",
                                 @"uk" : @"ua",
                                 @"pt-PT" : @"pt",
                                 @"zh-Hans" : @"zh_cn",
-                                @"zh-Hant" : @"zh_tw",                                
-                                };
-    
-    NSString *l = [langCodes objectForKey:lang];
-    if (l) {
-        lang = l;
+                                @"zh-Hant" : @"zh_tw"};
+    NSString *specialOWMLanguageCode = [langCodes objectForKey:preferedLanguage];
+    if (specialOWMLanguageCode) {
+        preferedLanguage = specialOWMLanguageCode;
     }
     
-    
-    [self setLang:lang];
+    self.lang = preferedLanguage;
 }
 
-- (void) setLang:(NSString *) lang {
-    _lang = lang;
-}
+#pragma mark - Current Weather
 
-- (NSString *) lang {
-    return _lang;
-}
-
-#pragma mark current weather
-
--(void) currentWeatherByCityName:(NSString *) name
-                    withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)currentWeatherByCityName:(NSString *)name
+                        callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    
-    NSString *method = [NSString stringWithFormat:@"/weather?q=%@", name];
-    [self callMethod:method withCallback:callback];
-    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"q"] = name;
+    [self callMethod:@"weather" withParams:params callback:callback];
 }
 
--(void) currentWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
-                      withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)currentWeatherByCoordinate:(CLLocationCoordinate2D)coordinate
+                          callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    
-    NSString *method = [NSString stringWithFormat:@"/weather?lat=%f&lon=%f",
-                        coordinate.latitude, coordinate.longitude ];
-    [self callMethod:method withCallback:callback];    
-    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"lat"] = @(coordinate.latitude);
+    params[@"lon"] = @(coordinate.longitude);
+    [self callMethod:@"weather" withParams:params callback:callback];
 }
 
--(void) currentWeatherByCityId:(NSString *) cityId
-                  withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)currentWeatherByCityID:(NSString *)cityID
+                      callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    NSString *method = [NSString stringWithFormat:@"/weather?id=%@", cityId];
-    [self callMethod:method withCallback:callback];    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"id"] = cityID;
+    [self callMethod:@"weather" withParams:params callback:callback];
 }
 
 
-#pragma mark forcast
+#pragma mark - Forecast
 
--(void) forecastWeatherByCityName:(NSString *) name
-                    withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)forecastWeatherByCityName:(NSString *)name
+                         callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    
-    NSString *method = [NSString stringWithFormat:@"/forecast?q=%@", name];
-    [self callMethod:method withCallback:callback];
-    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"q"] = name;
+    [self callMethod:@"forecast" withParams:params callback:callback];
 }
 
--(void) forecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
-                      withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)forecastWeatherByCoordinate:(CLLocationCoordinate2D)coordinate
+                           callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    
-    NSString *method = [NSString stringWithFormat:@"/forecast?lat=%f&lon=%f",
-                        coordinate.latitude, coordinate.longitude ];
-    [self callMethod:method withCallback:callback];
-    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"lat"] = @(coordinate.latitude);
+    params[@"lon"] = @(coordinate.longitude);
+    [self callMethod:@"forecast" withParams:params callback:callback];
 }
 
--(void) forecastWeatherByCityId:(NSString *) cityId
-                  withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)forecastWeatherByCityID:(NSString *)cityID
+                       callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    NSString *method = [NSString stringWithFormat:@"/forecast?id=%@", cityId];
-    [self callMethod:method withCallback:callback];
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"id"] = cityID;
+    [self callMethod:@"forecast" withParams:params callback:callback];
 }
 
-#pragma mark forcast - n days
+#pragma mark - Forcast for n days
 
--(void) dailyForecastWeatherByCityName:(NSString *) name
-                             withCount:(int) count
-                          andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)dailyForecastWeatherByCityName:(NSString *)name
+                             withCount:(NSInteger)count
+                              callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    
-    NSString *method = [NSString stringWithFormat:@"/forecast/daily?q=%@&cnt=%d", name, count];
-    [self callMethod:method withCallback:callback];
-    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"q"] = name;
+    params[@"cnt"] = @(count);
+    [self callMethod:@"forecast/daily" withParams:params callback:callback];
 }
 
--(void) dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
-                               withCount:(int) count
-                            andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D)coordinate
+                               withCount:(NSInteger)count
+                                callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    
-    NSString *method = [NSString stringWithFormat:@"/forecast/daily?lat=%f&lon=%f&cnt=%d",
-                        coordinate.latitude, coordinate.longitude, count ];
-    [self callMethod:method withCallback:callback];
-    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"lat"] = @(coordinate.latitude);
+    params[@"lon"] = @(coordinate.longitude);
+    params[@"cnt"] = @(count);
+    [self callMethod:@"forecast/daily" withParams:params callback:callback];
 }
 
--(void) dailyForecastWeatherByCityId:(NSString *) cityId
-                           withCount:(int) count
-                   andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)dailyForecastWeatherByCityID:(NSString *)cityID
+                           withCount:(NSInteger)count
+                            callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    NSString *method = [NSString stringWithFormat:@"/forecast/daily?id=%@&cnt=%d", cityId, count];
-    [self callMethod:method withCallback:callback];
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"id"] = cityID;
+    params[@"cnt"] = @(count);
+    [self callMethod:@"forecast/daily" withParams:params callback:callback];
 }
 
+#pragma mark - Search
 
-#pragma mark searching
-
--(void) searchForCityName:(NSString *)name
-         withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+-(void)searchForCityName:(NSString *)name
+                callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    NSString *method = [NSString stringWithFormat:@"/find?q=%@&units=metric", [name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    [self callMethod:method withCallback:callback];
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"q"] = name;
+    [self callMethod:@"find" withParams:params callback:callback];
 }
 
--(void) searchForCityName:(NSString *)name
-                withCount:(int) count
-             andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+- (void)searchForCityName:(NSString *)name
+                withCount:(NSInteger)count
+                 callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
-    NSString *method = [NSString stringWithFormat:@"/find?q=%@&units=metric&cnt=%d", [name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], count];
-    [self callMethod:method withCallback:callback];
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"q"] = name;
+    params[@"cnt"] = @(count);
+    [self callMethod:@"find" withParams:params callback:callback];
 }
-
-
 
 @end
+
