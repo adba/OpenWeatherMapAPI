@@ -1,7 +1,7 @@
 inhibit_all_warnings!
 
 target 'OpenWeatherMapAPI', :exclusive => true do
-    platform :ios, '6.0'
+    platform :ios, '8.0'
     pod 'AFNetworking' 
 end
 
