@@ -115,7 +115,7 @@ this ([json](http://api.openweathermap.org/data/2.5/weather?q=Odense "JSON data"
 See an example in the `OWMViewController.m` file.
 
 ## Methods ##
-The following methods are availabe at this time:
+The following methods are available at this time:
 
 ### current weather ###
 
