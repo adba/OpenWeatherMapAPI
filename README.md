@@ -1,3 +1,13 @@
+**Notice: This project isn't under active development.**
+
+I recomend you trying one of the the other libraries like:
+
+ - [SwiftOpenWeatherMapAPI](https://github.com/filippotosetto/SwiftOpenWeatherMapAPI) (Swift)
+ - [JFOpenWeatherMapManager](https://github.com/jfield44/JFOpenWeatherMapManager)
+ - [KFOpenWeatherMapAPI](https://github.com/ricobeck/KFOpenWeatherMapAPI)
+
+---
+
 <center>![OpenWeatherMapAPI](https://raw.github.com/adba/OpenWeatherMapAPI/master/hero.png)</center>
 
 # Open Weather Map iOS API #
