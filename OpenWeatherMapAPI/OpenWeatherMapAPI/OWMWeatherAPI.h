@@ -9,71 +9,107 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
-typedef enum {
-    kOWMTempKelvin,
-    kOWMTempCelcius,
-    kOWMTempFahrenheit
-} OWMTemperature;
+typedef NS_ENUM(NSUInteger, OWMWeatherMeasurementSystem) {
+    OWMWeatherMeasurementSystemMetrics,
+    OWMWeatherMeasurementSystemImperial
+};
 
+typedef void (^OWMWeatherAPICallback)(NSError* error, NSDictionary *result);
 
 @interface OWMWeatherAPI : NSObject
 
-- (instancetype) initWithAPIKey:(NSString *) apiKey;
+/**
+ * Creates API helper instance with speciefied API-key.
+ * @param APIKey Represents key used for access to API. http://openweathermap.org/appid
+ **/
+- (instancetype)initWithAPIKey:(NSString *)APIKey;
 
-- (void) setApiVersion:(NSString *) version;
-- (NSString *) apiVersion;
+/**
+ * Represents key currently used for request.
+ */
+@property (nonatomic, readonly) NSString *APIKey;
 
-- (void) setTemperatureFormat:(OWMTemperature) tempFormat;
-- (OWMTemperature) temperatureFormat;
+/**
+ * Indicates version currently used for requests.
+ */
+@property (nonatomic, readonly) NSString *APIVersion;
 
-- (void) setLangWithPreferedLanguage;
-- (void) setLang:(NSString *) lang;
-- (NSString *) lang;
+/**
+ * Indicates how dates will be represented. If 'YES' NSDate will be used in callbacks. By default 'NO'.
+ */
+@property (nonatomic) BOOL shouldConvertDates;
 
-#pragma mark - current weather
+/**
+ * Shows which measurement system will used in server responses.
+ */
+@property (nonatomic) OWMWeatherMeasurementSystem measurementSystem;
 
--(void) currentWeatherByCityName:(NSString *) name
-                    withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+/**
+ * Shows lang used for forecast weather conditions.
+ */
+@property (nonatomic) NSString *lang;
 
+/**
+ * Sets lang according to current user device settings.
+ **/
+- (void)setLangWithPreferredLanguage;
 
--(void) currentWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
-                      withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+#pragma mark - Current weather
 
--(void) currentWeatherByCityId:(NSString *) cityId
-                  withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+- (void)currentWeatherByCityName:(NSString *)name
+                        callback:(OWMWeatherAPICallback)callback;
 
-#pragma mark - forecast
+- (void)currentWeatherByCoordinate:(CLLocationCoordinate2D)coordinate
+                          callback:(OWMWeatherAPICallback)callback;
 
--(void) forecastWeatherByCityName:(NSString *) name
-                     withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+- (void)currentWeatherByCityID:(NSString *)cityID
+                      callback:(OWMWeatherAPICallback)callback;
 
--(void) forecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
-                       withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+#pragma mark - Forecast
 
--(void) forecastWeatherByCityId:(NSString *) cityId
-                   withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+- (void)forecastWeatherByCityName:(NSString *)name
+                         callback:(OWMWeatherAPICallback)callback;
 
-#pragma mark forcast - n days
+- (void)forecastWeatherByCoordinate:(CLLocationCoordinate2D)coordinate
+                           callback:(OWMWeatherAPICallback)callback;
 
--(void) dailyForecastWeatherByCityName:(NSString *) name
-                             withCount:(int) count
-                          andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+- (void)forecastWeatherByCityID:(NSString *)cityID
+                       callback:(OWMWeatherAPICallback)callback;
 
--(void) dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
-                               withCount:(int) count
-                            andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+#pragma mark - Forecast for n days
 
--(void) dailyForecastWeatherByCityId:(NSString *) cityId
-                           withCount:(int) count
-                        andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+- (void)dailyForecastWeatherByCityName:(NSString *)name
+                             withCount:(NSInteger)count
+                              callback:(OWMWeatherAPICallback)callback;
 
-#pragma mark search
+- (void)dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D)coordinate
+                               withCount:(NSInteger)count
+                                callback:(OWMWeatherAPICallback)callback;
 
--(void) searchForCityName:(NSString *)name
-         withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+- (void)dailyForecastWeatherByCityID:(NSString *)cityID
+                           withCount:(NSInteger)count
+                            callback:(OWMWeatherAPICallback)callback;
 
--(void) searchForCityName:(NSString *)name
-                withCount:(int) count
-             andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+#pragma mark - Search
+
+- (void)searchForCityName:(NSString *)name
+                 callback:(OWMWeatherAPICallback)callback;
+
+- (void)searchForCityName:(NSString *)name
+                withCount:(NSInteger)count
+                 callback:(OWMWeatherAPICallback)callback;
+
+#pragma mark - Core
+
+/**
+ * Calls the web API and converts the result. Then it calls the callback on the caller-queue.
+ * @param method URL's path.
+ * @param params Represents key-value pairs fo request.
+ * @param callback Completion block.
+ * @warning Should only be used to extend the functionality.
+ **/
+- (void)callMethod:(NSString *)method
+        withParams:(NSDictionary *)params
+          callback:(void (^)(NSError *error, NSDictionary *result))callback;
 
 @end
