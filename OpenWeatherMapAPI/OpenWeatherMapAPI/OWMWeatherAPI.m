@@ -146,8 +146,10 @@
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@%@%@&APPID=%@%@", _baseURL, _apiVersion, method, _apiKey, langString];
+    // Please note, we must escape any spaces or other unexpected chars
+    NSString *escapedUrlString = [urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
-    NSURL *url = [NSURL URLWithString:urlString];
+    NSURL *url = [NSURL URLWithString:escapedUrlString];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
