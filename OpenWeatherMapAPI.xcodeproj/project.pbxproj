@@ -30,6 +30,7 @@
 		64DC45F6177380FD0039B58D /* OWMWeatherAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 64DC45F5177380FD0039B58D /* OWMWeatherAPI.m */; };
 		64F1A805177F966500E8E247 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 64F1A804177F966500E8E247 /* Icon.png */; };
 		64F1A807177F966700E8E247 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 64F1A806177F966700E8E247 /* Icon@2x.png */; };
+		E1987FBF6B6DD1F04FB1DCF3 /* libPods-OpenWeatherMapAPI-OSX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 714818070AE7FEFF4F968EFD /* libPods-OpenWeatherMapAPI-OSX.a */; };
 		F9AC1BE5BBDDF8BE70FE4957 /* libPods-OpenWeatherMapAPI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEF7B014923891056937215B /* libPods-OpenWeatherMapAPI.a */; };
 /* End PBXBuildFile section */
 
@@ -71,8 +72,10 @@
 		64F1A804177F966500E8E247 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		64F1A806177F966700E8E247 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		714818070AE7FEFF4F968EFD /* libPods-OpenWeatherMapAPI-OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OpenWeatherMapAPI-OSX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B5EC958042F8A39C81E049C2 /* Pods-OpenWeatherMapAPI-OSX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OpenWeatherMapAPI-OSX.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OpenWeatherMapAPI-OSX/Pods-OpenWeatherMapAPI-OSX.debug.xcconfig"; sourceTree = "<group>"; };
 		BEF7B014923891056937215B /* libPods-OpenWeatherMapAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OpenWeatherMapAPI.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3A7B9869D074AA1671F6EF4 /* Pods-OpenWeatherMapAPI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OpenWeatherMapAPI.release.xcconfig"; path = "Pods/Target Support Files/Pods-OpenWeatherMapAPI/Pods-OpenWeatherMapAPI.release.xcconfig"; sourceTree = "<group>"; };
+		F766735D199D6041843EEA19 /* Pods-OpenWeatherMapAPI-OSX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OpenWeatherMapAPI-OSX.release.xcconfig"; path = "Pods/Target Support Files/Pods-OpenWeatherMapAPI-OSX/Pods-OpenWeatherMapAPI-OSX.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +85,7 @@
 			files = (
 				1D09EE5317B13089005E521C /* CoreServices.framework in Frameworks */,
 				1D09EE3717B12E7F005E521C /* Cocoa.framework in Frameworks */,
+				E1987FBF6B6DD1F04FB1DCF3 /* libPods-OpenWeatherMapAPI-OSX.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +142,8 @@
 			children = (
 				09EF28B16DAD2ECCC981F5F9 /* Pods-OpenWeatherMapAPI.debug.xcconfig */,
 				E3A7B9869D074AA1671F6EF4 /* Pods-OpenWeatherMapAPI.release.xcconfig */,
+				B5EC958042F8A39C81E049C2 /* Pods-OpenWeatherMapAPI-OSX.debug.xcconfig */,
+				F766735D199D6041843EEA19 /* Pods-OpenWeatherMapAPI-OSX.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -486,6 +492,7 @@
 /* Begin XCBuildConfiguration section */
 		1D09EE4E17B12E80005E521C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5EC958042F8A39C81E049C2 /* Pods-OpenWeatherMapAPI-OSX.debug.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -507,6 +514,7 @@
 		};
 		1D09EE4F17B12E80005E521C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F766735D199D6041843EEA19 /* Pods-OpenWeatherMapAPI-OSX.release.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
