@@ -10,4 +10,6 @@ Pod::Spec.new do |s|
   s.public_header_files = 'OpenWeatherMapAPI/OpenWeatherMapAPI/*.h'
   s.requires_arc = true
   s.dependency 'AFNetworking', '~> 3.1'
+  s.ios.deployment_target = '9.0'
+
 end
