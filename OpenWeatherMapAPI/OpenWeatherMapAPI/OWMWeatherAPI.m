@@ -7,13 +7,12 @@
 //
 
 #import "OWMWeatherAPI.h"
-#import "AFJSONRequestOperation.h"
+#import <AFNetworking/AFNetworking.h>
 
 @interface OWMWeatherAPI () {
     NSString *_baseURL;
     NSString *_apiKey;
     NSString *_apiVersion;
-    NSOperationQueue *_weatherQueue;
     
     NSString *_lang;
     
@@ -30,9 +29,6 @@
         _baseURL = @"http://api.openweathermap.org/data/";
         _apiKey  = apiKey;
         _apiVersion = @"2.5";
-        
-        _weatherQueue = [[NSOperationQueue alloc] init];
-        _weatherQueue.name = @"OMWWeatherQueue";
         
         _currentTemperatureFormat = kOWMTempCelcius;
         
@@ -151,24 +147,24 @@
     
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-
-        // callback on the caller queue
-        NSDictionary *res = [self convertResult:JSON];
-        [callerQueue addOperationWithBlock:^{
-            callback(nil, res);
-        }];
-
-        
-    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-
-        // callback on the caller queue
-        [callerQueue addOperationWithBlock:^{
-            callback(error, nil);
-        }];
-        
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+    
+    NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+        if (!error) {
+            NSDictionary *res = [self convertResult:responseObject];
+            [callerQueue addOperationWithBlock:^{
+                callback(nil, res);
+            }];
+        }else{
+            [callerQueue addOperationWithBlock:^{
+                callback(error, nil);
+            }];
+            
+        }
     }];
-    [_weatherQueue addOperation:operation];
+    [dataTask resume];
+
 }
 
 #pragma mark - public api
